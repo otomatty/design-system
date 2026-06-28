@@ -7,12 +7,14 @@ export interface DropdownMenuProps {
   children: React.ReactNode;
   /** Horizontal alignment of the panel relative to the trigger. @default "start" */
   align?: "start" | "end";
+  /** Render the menu open on first mount (uncontrolled). */
+  defaultOpen?: boolean;
   className?: string;
 }
 
 /** Click-to-open menu anchored to a trigger. Closes on outside click / Escape. */
-export function DropdownMenu({ trigger, children, align = "start", className }: DropdownMenuProps) {
-  const [open, setOpen] = React.useState(false);
+export function DropdownMenu({ trigger, children, align = "start", defaultOpen = false, className }: DropdownMenuProps) {
+  const [open, setOpen] = React.useState(defaultOpen);
   const rootRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {

@@ -88,34 +88,9 @@ export const fontSize: Record<string, FontSizeValue> = {
 };
 
 export const fontFamily: Record<string, string[]> = {
-  display: [
-    "InterVariable",
-    "Inter",
-    "SF Pro Display",
-    "-apple-system",
-    "system-ui",
-    "Segoe UI",
-    "Roboto",
-    "sans-serif",
-  ],
-  sans: [
-    "InterVariable",
-    "Inter",
-    "SF Pro Text",
-    "-apple-system",
-    "system-ui",
-    "Segoe UI",
-    "Roboto",
-    "sans-serif",
-  ],
-  mono: [
-    "JetBrains Mono Variable",
-    "JetBrains Mono",
-    "ui-monospace",
-    "SF Mono",
-    "Menlo",
-    "monospace",
-  ],
+  display: ["InterVariable", "Inter", "-apple-system", "system-ui", "Segoe UI", "Roboto", "sans-serif"],
+  sans: ["InterVariable", "Inter", "-apple-system", "system-ui", "Segoe UI", "Roboto", "sans-serif"],
+  mono: ["JetBrains Mono Variable", "JetBrains Mono", "ui-monospace", "Menlo", "monospace"],
 };
 
 export const tokens = { colors, radius, spacing, fontSize, fontFamily };

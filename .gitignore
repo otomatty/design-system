@@ -7,3 +7,6 @@ scratch/
 ds-bundle/
 .ds-build-meta.json
 .sync-diff.json
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules

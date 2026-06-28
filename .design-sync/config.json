@@ -1,0 +1,16 @@
+{
+  "pkg": "@otomatty/design-system",
+  "globalName": "OtomattyDS",
+  "shape": "package",
+  "buildCmd": "pnpm run build",
+  "cssEntry": "dist/styles.css",
+  "readmeHeader": ".design-sync/conventions.md",
+  "overrides": {
+    "Dialog": { "cardMode": "single", "viewport": "620x420" },
+    "DropdownMenu": { "cardMode": "single", "viewport": "360x320" },
+    "Navbar": { "cardMode": "column" },
+    "Footer": { "cardMode": "column" },
+    "Table": { "cardMode": "column" },
+    "Pagination": { "cardMode": "column" }
+  }
+}

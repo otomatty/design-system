@@ -14,8 +14,26 @@
   src: url("./fonts/inter-variable.woff2") format("woff2");
 }
 
+/* Alias the common name to the same bundled file so font stacks that fall
+   through to "Inter" still resolve to the shipped variable face. */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./fonts/inter-variable.woff2") format("woff2");
+}
+
 @font-face {
   font-family: "JetBrains Mono Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url("./fonts/jetbrains-mono-variable.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
   font-style: normal;
   font-display: swap;
   font-weight: 100 800;
@@ -78,19 +96,11 @@
   body {
     background-color: var(--ds-canvas);
     color: var(--ds-ink);
-    font-family: "InterVariable", "Inter", "SF Pro Text", -apple-system, system-ui,
+    font-family: "InterVariable", "Inter", -apple-system, system-ui,
       "Segoe UI", Roboto, sans-serif;
     font-size: 16px;
     line-height: 1.5;
     letter-spacing: -0.05px;
-  }
-
-  /* Roots that opt into the surface explicitly (previews, embedded designs). */
-  .ds-root {
-    background-color: var(--ds-canvas);
-    color: var(--ds-ink);
-    font-family: "InterVariable", "Inter", "SF Pro Text", -apple-system, system-ui,
-      "Segoe UI", Roboto, sans-serif;
   }
 
   *,
@@ -103,6 +113,18 @@
     background-color: color-mix(in srgb, var(--ds-primary) 35%, transparent);
     color: var(--ds-ink);
   }
+}
+
+/*
+ * Plain (non-layered) rules — never tree-shaken by the content scan.
+ * `.ds-root` is the explicit dark-surface opt-in for previews and embedded
+ * designs, where the host page's body background isn't the canvas.
+ */
+.ds-root {
+  background-color: var(--ds-canvas);
+  color: var(--ds-ink);
+  font-family: "InterVariable", "Inter", -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.05px;
 }
 
 @layer utilities {
