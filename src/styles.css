@@ -1,0 +1,118 @@
+/*
+ * Design system stylesheet.
+ *
+ * Order matters: @font-face + token variables first, then Tailwind layers.
+ * Fonts are copied into ./fonts at build time (scripts/copy-fonts.mjs) and
+ * referenced relative to the compiled dist/styles.css.
+ */
+
+@font-face {
+  font-family: "InterVariable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./fonts/inter-variable.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "JetBrains Mono Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url("./fonts/jetbrains-mono-variable.woff2") format("woff2");
+}
+
+/* ── Design tokens as CSS custom properties ─────────────────────────────── */
+:root {
+  /* Surface ladder */
+  --ds-canvas: #010102;
+  --ds-surface-1: #08090b;
+  --ds-surface-2: #101216;
+  --ds-surface-3: #181a1f;
+  --ds-surface-4: #202329;
+
+  /* Hairlines */
+  --ds-hairline: #23252a;
+  --ds-hairline-strong: #33363d;
+  --ds-hairline-tertiary: #1b1d21;
+
+  /* Ink */
+  --ds-ink: #f7f8f8;
+  --ds-ink-muted: #d0d6e0;
+  --ds-ink-subtle: #8a8f98;
+  --ds-ink-tertiary: #62666d;
+
+  /* Brand */
+  --ds-primary: #5e6ad2;
+  --ds-primary-hover: #828fff;
+  --ds-primary-focus: #5e69d1;
+  --ds-on-primary: #ffffff;
+  --ds-brand-secure: #7a7fad;
+
+  /* Semantic */
+  --ds-semantic-success: #27a644;
+  --ds-semantic-warning: #f2994a;
+  --ds-semantic-danger: #eb5757;
+  --ds-semantic-info: #5e6ad2;
+
+  /* Inverse */
+  --ds-inverse-canvas: #ffffff;
+  --ds-inverse-surface-1: #f4f5f8;
+  --ds-inverse-surface-2: #e7e9ef;
+  --ds-inverse-ink: #010102;
+
+  color-scheme: dark;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--ds-canvas);
+    color: var(--ds-ink);
+    font-family: "InterVariable", "Inter", "SF Pro Text", -apple-system, system-ui,
+      "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: -0.05px;
+  }
+
+  /* Roots that opt into the surface explicitly (previews, embedded designs). */
+  .ds-root {
+    background-color: var(--ds-canvas);
+    color: var(--ds-ink);
+    font-family: "InterVariable", "Inter", "SF Pro Text", -apple-system, system-ui,
+      "Segoe UI", Roboto, sans-serif;
+  }
+
+  *,
+  ::before,
+  ::after {
+    border-color: var(--ds-hairline);
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--ds-primary) 35%, transparent);
+    color: var(--ds-ink);
+  }
+}
+
+@layer utilities {
+  /* Subtle top edge highlight used on lifted panels (the "pixel rendered" feel). */
+  .ds-edge-highlight {
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.04);
+  }
+
+  .ds-focus-ring {
+    outline: 2px solid color-mix(in srgb, var(--ds-primary-focus) 50%, transparent);
+    outline-offset: 1px;
+  }
+}
