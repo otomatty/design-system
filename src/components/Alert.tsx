@@ -29,14 +29,17 @@ const glyphs: Record<AlertTone, React.ReactNode> = {
 
 /** Inline contextual banner. */
 export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  { tone = "info", title, icon, onDismiss, className, children, ...props },
+  { tone = "info", title, icon, onDismiss, role, className, children, ...props },
   ref
 ) {
   const styles = toneStyles[tone];
+  // Persistent info/success banners shouldn't be assertively announced; only
+  // warning/danger default to the live `alert` role. Consumers can override.
+  const resolvedRole = role ?? (tone === "danger" || tone === "warning" ? "alert" : "status");
   return (
     <div
       ref={ref}
-      role="alert"
+      role={resolvedRole}
       className={cn("flex gap-sm rounded-md border p-sm", styles.wrap, className)}
       {...props}
     >

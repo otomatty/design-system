@@ -65,10 +65,15 @@ export function ToastProvider({ children }: ToastProviderProps) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="pointer-events-none fixed bottom-4 right-4 z-[100] flex w-[min(360px,calc(100vw-2rem))] flex-col gap-sm">
+      <div
+        aria-live="polite"
+        aria-atomic="false"
+        className="pointer-events-none fixed bottom-4 right-4 z-[100] flex w-[min(360px,calc(100vw-2rem))] flex-col gap-sm"
+      >
         {items.map((t) => (
           <div
             key={t.id}
+            role={t.tone === "danger" || t.tone === "warning" ? "alert" : "status"}
             className="ds-edge-highlight pointer-events-auto flex animate-ds-slide-up gap-sm overflow-hidden rounded-lg border border-hairline-strong bg-surface-2 p-sm shadow-2xl"
           >
             <span className={cn("w-0.5 shrink-0 rounded-full", toneBar[t.tone ?? "neutral"])} />

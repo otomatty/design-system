@@ -17,9 +17,12 @@ export interface AccordionProps extends React.HTMLAttributes<HTMLDivElement> {
 
 /** Vertically stacked, collapsible sections. */
 export function Accordion({ multiple, defaultValue, className, children, ...props }: AccordionProps) {
-  const [open, setOpen] = React.useState<string[]>(
-    defaultValue ? (Array.isArray(defaultValue) ? defaultValue : [defaultValue]) : []
-  );
+  const [open, setOpen] = React.useState<string[]>(() => {
+    if (!defaultValue) return [];
+    const initial = Array.isArray(defaultValue) ? defaultValue : [defaultValue];
+    // In single mode, never start with more than one panel open.
+    return multiple ? initial : initial.slice(0, 1);
+  });
   const isOpen = React.useCallback((v: string) => open.includes(v), [open]);
   const toggle = React.useCallback(
     (v: string) => {

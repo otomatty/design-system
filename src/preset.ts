@@ -11,8 +11,11 @@ import { colors, radius, spacing, fontSize, fontFamily } from "./tokens";
  *   import preset from "@otomatty/design-system/preset";
  *   export default { presets: [preset], content: [...] };
  */
+// Colors resolve to `rgb(var(--ds-*) / <alpha-value>)`. The `--ds-*` vars hold
+// space-separated RGB channel triplets (see styles.css), so Tailwind opacity
+// modifiers (bg-primary/15, ring-primary-focus/50) compose correctly.
 const cssVarColors = Object.fromEntries(
-  Object.keys(colors).map((name) => [name, `var(--ds-${name})`])
+  Object.keys(colors).map((name) => [name, `rgb(var(--ds-${name}) / <alpha-value>)`])
 ) as Record<keyof typeof colors, string>;
 
 const preset: Partial<Config> = {
@@ -27,7 +30,7 @@ const preset: Partial<Config> = {
         content: "1280px",
       },
       ringColor: {
-        DEFAULT: "var(--ds-primary-focus)",
+        DEFAULT: "rgb(var(--ds-primary-focus))",
       },
       keyframes: {
         "ds-fade-in": {

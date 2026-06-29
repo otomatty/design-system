@@ -34,6 +34,11 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(function Av
   ref
 ) {
   const [failed, setFailed] = React.useState(false);
+  // Reset the failure state when the src changes so a later valid URL can load
+  // (e.g. a recycled list row that first showed a broken/placeholder image).
+  React.useEffect(() => {
+    setFailed(false);
+  }, [src]);
   const showImage = src && !failed;
   return (
     <span

@@ -2,8 +2,10 @@
 
 A dark-canvas, Linear-inspired React library. Components are compiled and
 imported from the bundle; you compose them and lay them out with the Tailwind
-token vocabulary below. There is **no provider to wrap** — components are
-self-contained — but the system is **dark-only**, so the surface must be set.
+token vocabulary below. Regular components are **self-contained — no provider to
+wrap**. The one exception is the **toast system**: `useToast()` requires a
+`<ToastProvider>` ancestor (mount it once near the app root). The system is also
+**dark-only**, so the surface must be set.
 
 ## Setup — set the dark surface
 

@@ -22,6 +22,11 @@ Peer deps: `react` and `react-dom` (>=18).
 
    It carries the design tokens (`--ds-*` custom properties), the `@font-face`
    declarations (Inter + JetBrains Mono, bundled), and the component utilities.
+   The stylesheet sets `body` to the dark canvas surface. **If your app can't
+   style `body`** (embedded widget, partial mount), wrap your subtree in
+   `<div className="ds-root">` instead — it applies the canvas background, ink
+   text color, and base font. Without the dark surface, the near-white component
+   text is unreadable.
 
 2. Extend your Tailwind config with the preset so your own layout markup can use
    the same token vocabulary (`bg-surface-1`, `text-ink`, `rounded-lg`, …):

@@ -35,12 +35,16 @@ export const Footer = React.forwardRef<HTMLElement, FooterProps>(function Footer
             <ul className="flex flex-col gap-2">
               {col.links.map((link, j) => (
                 <li key={j}>
-                  <a
-                    href={link.href ?? "#"}
-                    className="text-body-sm text-ink-subtle transition-colors hover:text-ink"
-                  >
-                    {link.label}
-                  </a>
+                  {link.href ? (
+                    <a
+                      href={link.href}
+                      className="text-body-sm text-ink-subtle transition-colors hover:text-ink"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <span className="text-body-sm text-ink-subtle">{link.label}</span>
+                  )}
                 </li>
               ))}
             </ul>

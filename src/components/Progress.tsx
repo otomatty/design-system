@@ -20,14 +20,16 @@ export const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(function
   { value = 0, max = 100, tone = "primary", className, ...props },
   ref
 ) {
-  const pct = Math.max(0, Math.min(100, (value / max) * 100));
+  const safeMax = Number.isFinite(max) && max > 0 ? max : 100;
+  const safeValue = Number.isFinite(value) ? Math.min(safeMax, Math.max(0, value)) : 0;
+  const pct = (safeValue / safeMax) * 100;
   return (
     <div
       ref={ref}
       role="progressbar"
-      aria-valuenow={value}
+      aria-valuenow={safeValue}
       aria-valuemin={0}
-      aria-valuemax={max}
+      aria-valuemax={safeMax}
       className={cn("h-1.5 w-full overflow-hidden rounded-pill bg-surface-3", className)}
       {...props}
     >

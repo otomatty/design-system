@@ -77,7 +77,7 @@ export interface TabProps extends React.ButtonHTMLAttributes<HTMLButtonElement> 
   value: string;
 }
 
-export function Tab({ value, className, children, ...props }: TabProps) {
+export function Tab({ value, className, children, onClick, ...props }: TabProps) {
   const { value: active, setValue, variant } = useTabs();
   const selected = active === value;
   return (
@@ -85,7 +85,10 @@ export function Tab({ value, className, children, ...props }: TabProps) {
       type="button"
       role="tab"
       aria-selected={selected}
-      onClick={() => setValue(value)}
+      onClick={(event) => {
+        onClick?.(event);
+        if (!event.defaultPrevented) setValue(value);
+      }}
       className={cn(
         "text-body-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-focus/50",
         variant === "pill"

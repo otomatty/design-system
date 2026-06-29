@@ -22,6 +22,28 @@ export const Field = React.forwardRef<HTMLDivElement, FieldProps>(function Field
   { label, hint, error, required, htmlFor, className, children, ...props },
   ref
 ) {
+  const reactId = React.useId();
+  const describedById = `${reactId}-desc`;
+  const hasDescription = Boolean(error || hint);
+  // Associate the helper/error text with the control so screen readers announce
+  // it. Error takes precedence over hint, and is also marked aria-invalid.
+  const control =
+    hasDescription && React.isValidElement(children)
+      ? React.cloneElement(
+          children as React.ReactElement<{ "aria-describedby"?: string; "aria-invalid"?: boolean }>,
+          {
+            "aria-describedby":
+              [
+                (children as React.ReactElement<{ "aria-describedby"?: string }>).props["aria-describedby"],
+                describedById,
+              ]
+                .filter(Boolean)
+                .join(" ") || undefined,
+            ...(error ? { "aria-invalid": true } : {}),
+          }
+        )
+      : children;
+
   return (
     <div ref={ref} className={cn("flex flex-col gap-xs", className)} {...props}>
       {label ? (
@@ -30,11 +52,15 @@ export const Field = React.forwardRef<HTMLDivElement, FieldProps>(function Field
           {required ? <span className="ml-0.5 text-semantic-danger">*</span> : null}
         </label>
       ) : null}
-      {children}
+      {control}
       {error ? (
-        <p className="text-caption text-semantic-danger">{error}</p>
+        <p id={describedById} className="text-caption text-semantic-danger">
+          {error}
+        </p>
       ) : hint ? (
-        <p className="text-caption text-ink-subtle">{hint}</p>
+        <p id={describedById} className="text-caption text-ink-subtle">
+          {hint}
+        </p>
       ) : null}
     </div>
   );

@@ -37,6 +37,14 @@ export function Tooltip({ content, side = "top", children, delay = 150 }: Toolti
 
   React.useEffect(() => () => clearTimeout(timer.current), []);
 
+  const tooltipId = React.useId();
+  // Associate the trigger with the tooltip so assistive tech announces it.
+  const trigger = React.isValidElement(children)
+    ? React.cloneElement(children as React.ReactElement<{ "aria-describedby"?: string }>, {
+        "aria-describedby": open ? tooltipId : undefined,
+      })
+    : children;
+
   return (
     <span
       className="relative inline-flex"
@@ -45,9 +53,11 @@ export function Tooltip({ content, side = "top", children, delay = 150 }: Toolti
       onFocusCapture={show}
       onBlurCapture={hide}
     >
-      {children}
+      {trigger}
       <span
+        id={tooltipId}
         role="tooltip"
+        aria-hidden={!open}
         className={cn(
           "pointer-events-none absolute z-50 w-max max-w-xs rounded-md border border-hairline-strong bg-surface-3 px-2 py-1 text-caption text-ink shadow-lg transition-opacity duration-150",
           sidePos[side],

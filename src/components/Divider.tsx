@@ -25,7 +25,13 @@ export const Divider = React.forwardRef<HTMLDivElement, DividerProps>(function D
   }
   if (label) {
     return (
-      <div ref={ref} className={cn("flex items-center gap-sm", className)} {...props}>
+      <div
+        ref={ref}
+        role="separator"
+        aria-orientation="horizontal"
+        className={cn("flex items-center gap-sm", className)}
+        {...props}
+      >
         <span className="h-px flex-1 bg-hairline" />
         <span className="text-caption text-ink-subtle">{label}</span>
         <span className="h-px flex-1 bg-hairline" />

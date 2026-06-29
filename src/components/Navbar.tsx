@@ -50,6 +50,7 @@ export const NavLink = React.forwardRef<HTMLAnchorElement, NavLinkProps>(functio
   return (
     <a
       ref={ref}
+      aria-current={active ? "page" : undefined}
       className={cn(
         "transition-colors hover:text-ink",
         active ? "text-ink" : "text-ink-subtle",

@@ -16,6 +16,7 @@ export interface DropdownMenuProps {
 export function DropdownMenu({ trigger, children, align = "start", defaultOpen = false, className }: DropdownMenuProps) {
   const [open, setOpen] = React.useState(defaultOpen);
   const rootRef = React.useRef<HTMLDivElement>(null);
+  const menuRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     if (!open) return;
@@ -25,6 +26,8 @@ export function DropdownMenu({ trigger, children, align = "start", defaultOpen =
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     document.addEventListener("mousedown", onDown);
     document.addEventListener("keydown", onKey);
+    // Move focus into the menu so it's reachable by keyboard / screen readers.
+    menuRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
     return () => {
       document.removeEventListener("mousedown", onDown);
       document.removeEventListener("keydown", onKey);
@@ -33,9 +36,16 @@ export function DropdownMenu({ trigger, children, align = "start", defaultOpen =
 
   return (
     <div ref={rootRef} className="relative inline-flex">
-      <span onClick={() => setOpen((o) => !o)}>{trigger}</span>
+      <span
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      >
+        {trigger}
+      </span>
       {open ? (
         <div
+          ref={menuRef}
           role="menu"
           className={cn(
             "ds-edge-highlight absolute top-full z-50 mt-1 min-w-[180px] animate-ds-scale-in rounded-md border border-hairline-strong bg-surface-2 p-1 shadow-xl",
