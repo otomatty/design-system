@@ -46,12 +46,14 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(function Card(
   );
 });
 
+/** Title + description region at the top of a `Card`. */
 export const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   function CardHeader({ className, ...props }, ref) {
     return <div ref={ref} className={cn("flex flex-col gap-1 p-lg", className)} {...props} />;
   }
 );
 
+/** Card heading, rendered in the display font. */
 export const CardTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTMLHeadingElement>>(
   function CardTitle({ className, ...props }, ref) {
     return (
@@ -60,6 +62,7 @@ export const CardTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttribut
   }
 );
 
+/** Muted secondary line beneath a `CardTitle`. */
 export const CardDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
@@ -67,12 +70,14 @@ export const CardDescription = React.forwardRef<
   return <p ref={ref} className={cn("text-body-sm text-ink-subtle", className)} {...props} />;
 });
 
+/** Main body content of a `Card`. */
 export const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   function CardContent({ className, ...props }, ref) {
     return <div ref={ref} className={cn("px-lg pb-lg text-body-sm text-ink-muted", className)} {...props} />;
   }
 );
 
+/** Actions row at the bottom of a `Card`, separated by a hairline. */
 export const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   function CardFooter({ className, ...props }, ref) {
     return (

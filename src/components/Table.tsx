@@ -22,10 +22,12 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps>(function Tab
   );
 });
 
+/** `<thead>` wrapper styled for the dark surface. */
 export function TableHead({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) {
   return <thead className={cn("bg-surface-1", className)} {...props} />;
 }
 
+/** `<tbody>` wrapper with hairline row dividers. */
 export function TableBody({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) {
   return <tbody className={cn("divide-y divide-hairline", className)} {...props} />;
 }
@@ -35,6 +37,7 @@ export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement>
   interactive?: boolean;
 }
 
+/** A table row; pass `interactive` for hover highlight. */
 export function TableRow({ interactive, className, ...props }: TableRowProps) {
   return (
     <tr
@@ -44,6 +47,7 @@ export function TableRow({ interactive, className, ...props }: TableRowProps) {
   );
 }
 
+/** `<th>` header cell with uppercase label styling. */
 export function TableHeaderCell({ className, ...props }: React.ThHTMLAttributes<HTMLTableCellElement>) {
   return (
     <th
@@ -56,6 +60,7 @@ export function TableHeaderCell({ className, ...props }: React.ThHTMLAttributes<
   );
 }
 
+/** `<td>` body cell. */
 export function TableCell({ className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement>) {
   return <td className={cn("px-md py-2.5 text-ink-muted", className)} {...props} />;
 }

@@ -68,6 +68,7 @@ export interface DropdownItemProps extends React.ButtonHTMLAttributes<HTMLButton
   icon?: React.ReactNode;
 }
 
+/** A selectable row in a `DropdownMenu`. */
 export function DropdownItem({ destructive, icon, className, children, ...props }: DropdownItemProps) {
   return (
     <button
@@ -88,10 +89,12 @@ export function DropdownItem({ destructive, icon, className, children, ...props 
   );
 }
 
+/** Non-interactive section heading inside a `DropdownMenu`. */
 export function DropdownLabel({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("px-2 py-1 text-caption font-medium text-ink-tertiary", className)} {...props} />;
 }
 
+/** Hairline divider between groups of menu items. */
 export function DropdownSeparator({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("my-1 h-px bg-hairline", className)} {...props} />;
 }

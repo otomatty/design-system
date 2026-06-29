@@ -55,6 +55,7 @@ function useTabs() {
   return ctx;
 }
 
+/** Row of tab triggers. Place inside `Tabs`. */
 export function TabList({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   const { variant } = useTabs();
   return (
@@ -77,6 +78,7 @@ export interface TabProps extends React.ButtonHTMLAttributes<HTMLButtonElement> 
   value: string;
 }
 
+/** A single tab trigger; activates the panel with the matching `value`. */
 export function Tab({ value, className, children, onClick, ...props }: TabProps) {
   const { value: active, setValue, variant } = useTabs();
   const selected = active === value;
@@ -115,6 +117,7 @@ export interface TabPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   value: string;
 }
 
+/** Content shown when its `value` matches the active tab. */
 export function TabPanel({ value, className, children, ...props }: TabPanelProps) {
   const { value: active } = useTabs();
   if (active !== value) return null;

@@ -49,6 +49,7 @@ export interface AccordionItemProps {
   className?: string;
 }
 
+/** A single collapsible section within an `Accordion`. */
 export function AccordionItem({ value, title, children, className }: AccordionItemProps) {
   const ctx = React.useContext(AccordionContext);
   if (!ctx) throw new Error("AccordionItem must be used within <Accordion>");

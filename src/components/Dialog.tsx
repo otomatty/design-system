@@ -24,6 +24,22 @@ const sizes = {
 const FOCUSABLE =
   'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
+// Shared scroll-lock refcount so that closing one dialog while another is still
+// open doesn't prematurely restore the body's overflow.
+let scrollLockCount = 0;
+let restoreOverflow = "";
+function lockScroll() {
+  if (scrollLockCount === 0) {
+    restoreOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+  }
+  scrollLockCount += 1;
+}
+function unlockScroll() {
+  scrollLockCount = Math.max(0, scrollLockCount - 1);
+  if (scrollLockCount === 0) document.body.style.overflow = restoreOverflow;
+}
+
 export function Dialog({ open, onClose, children, size = "md", dismissable = true }: DialogProps) {
   const panelRef = React.useRef<HTMLDivElement>(null);
 
@@ -62,8 +78,7 @@ export function Dialog({ open, onClose, children, size = "md", dismissable = tru
     };
 
     document.addEventListener("keydown", onKey);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    lockScroll();
 
     // Move focus into the dialog on open (first focusable, else the panel).
     const initial = focusables()[0] ?? panelRef.current;
@@ -71,7 +86,7 @@ export function Dialog({ open, onClose, children, size = "md", dismissable = tru
 
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
+      unlockScroll();
       previouslyFocused?.focus?.();
     };
   }, [open, onClose, dismissable]);
@@ -100,6 +115,7 @@ export function Dialog({ open, onClose, children, size = "md", dismissable = tru
   );
 }
 
+/** Title + description region at the top of a `Dialog`. */
 export function DialogHeader({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div className={cn("flex flex-col gap-1 p-lg pb-sm", className)} {...props}>
@@ -108,18 +124,22 @@ export function DialogHeader({ className, children, ...props }: React.HTMLAttrib
   );
 }
 
+/** Dialog heading, rendered in the display font. */
 export function DialogTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
   return <h2 className={cn("font-display text-headline text-ink", className)} {...props} />;
 }
 
+/** Muted secondary line beneath a `DialogTitle`. */
 export function DialogDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
   return <p className={cn("text-body-sm text-ink-subtle", className)} {...props} />;
 }
 
+/** Main body content of a `Dialog`. */
 export function DialogBody({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("px-lg py-sm text-body-sm text-ink-muted", className)} {...props} />;
 }
 
+/** Actions row at the bottom of a `Dialog`, separated by a hairline. */
 export function DialogFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div

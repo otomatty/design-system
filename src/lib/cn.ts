@@ -9,6 +9,13 @@ import { extendTailwindMerge } from "tailwind-merge";
 // tokens in the `font-size` group keeps size and color independent.
 const twMerge = extendTailwindMerge({
   extend: {
+    // Custom spacing + radius scale names, so padding/margin/gap/rounded
+    // utilities (px-md, gap-xs, rounded-pill) merge last-wins instead of both
+    // a component default and a consumer override surviving.
+    theme: {
+      spacing: ["xxs", "xs", "sm", "md", "lg", "xl", "xxl", "section"],
+      borderRadius: ["xs", "sm", "md", "lg", "xl", "xxl", "pill"],
+    },
     classGroups: {
       "font-size": [
         {
