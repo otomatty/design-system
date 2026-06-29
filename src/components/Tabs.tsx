@@ -7,6 +7,9 @@ interface TabsContextValue {
   value: string;
   setValue: (v: string) => void;
   variant: TabsVariant;
+  /** Called by each `Tab` on mount; the first selects itself when uncontrolled
+   * and no `defaultValue` was given, so a tab stays keyboard-focusable. */
+  registerTab: (value: string) => void;
 }
 
 const TabsContext = React.createContext<TabsContextValue | null>(null);
@@ -39,7 +42,22 @@ export function Tabs({
     },
     [value, onValueChange]
   );
-  const ctx = React.useMemo(() => ({ value: active, setValue, variant }), [active, setValue, variant]);
+  // Uncontrolled with no defaultValue: adopt the first registered tab so it's
+  // keyboard-focusable (roving tabIndex) and its panel shows by default.
+  const claimedRef = React.useRef(false);
+  const registerTab = React.useCallback(
+    (tabValue: string) => {
+      if (value === undefined && !claimedRef.current) {
+        claimedRef.current = true;
+        setInternal((cur) => (cur === "" ? tabValue : cur));
+      }
+    },
+    [value]
+  );
+  const ctx = React.useMemo(
+    () => ({ value: active, setValue, variant, registerTab }),
+    [active, setValue, variant, registerTab]
+  );
   return (
     <TabsContext.Provider value={ctx}>
       <div className={cn("flex flex-col gap-md", className)} {...props}>
@@ -102,8 +120,9 @@ export interface TabProps extends React.ButtonHTMLAttributes<HTMLButtonElement> 
 
 /** A single tab trigger; activates the panel with the matching `value`. */
 export function Tab({ value, className, children, onClick, ...props }: TabProps) {
-  const { value: active, setValue, variant } = useTabs();
+  const { value: active, setValue, variant, registerTab } = useTabs();
   const selected = active === value;
+  React.useEffect(() => registerTab(value), [registerTab, value]);
   return (
     <button
       type="button"

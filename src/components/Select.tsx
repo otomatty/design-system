@@ -11,7 +11,9 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(function 
   ref
 ) {
   return (
-    <div className="relative">
+    // The caller's layout class sizes the wrapper so the absolutely-positioned
+    // chevron stays aligned to the control's right edge; the select fills it.
+    <div className={cn("relative", className)}>
       <select
         ref={ref}
         aria-invalid={invalid || undefined}
@@ -21,8 +23,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(function 
             "disabled:cursor-not-allowed disabled:opacity-50",
           invalid
             ? "border-semantic-danger focus:ring-semantic-danger/40"
-            : "border-hairline focus:border-hairline-strong",
-          className
+            : "border-hairline focus:border-hairline-strong"
         )}
         {...props}
       >
