@@ -38,10 +38,16 @@ export function Tooltip({ content, side = "top", children, delay = 150 }: Toolti
   React.useEffect(() => () => clearTimeout(timer.current), []);
 
   const tooltipId = React.useId();
-  // Associate the trigger with the tooltip so assistive tech announces it.
+  // Associate the trigger with the tooltip so assistive tech announces it,
+  // appending to (not replacing) any aria-describedby the child already has —
+  // e.g. an input already linked to Field helper/error text.
+  const existingDescribedBy = React.isValidElement(children)
+    ? (children.props as { "aria-describedby"?: string })["aria-describedby"]
+    : undefined;
   const trigger = React.isValidElement(children)
     ? React.cloneElement(children as React.ReactElement<{ "aria-describedby"?: string }>, {
-        "aria-describedby": open ? tooltipId : undefined,
+        "aria-describedby":
+          [existingDescribedBy, open ? tooltipId : undefined].filter(Boolean).join(" ") || undefined,
       })
     : children;
 

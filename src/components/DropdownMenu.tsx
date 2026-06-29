@@ -34,15 +34,28 @@ export function DropdownMenu({ trigger, children, align = "start", defaultOpen =
     };
   }, [open]);
 
+  const toggle = () => setOpen((o) => !o);
+  // Compose the menu state onto the actual (focusable) trigger element so
+  // assistive tech announces the popup + expanded state on the focused control,
+  // not on a non-focusable wrapper. Falls back to a span for non-element triggers.
+  const triggerNode = React.isValidElement(trigger) ? (
+    React.cloneElement(trigger as React.ReactElement<Record<string, unknown>>, {
+      "aria-haspopup": "menu",
+      "aria-expanded": open,
+      onClick: (e: React.MouseEvent) => {
+        (trigger.props as { onClick?: (e: React.MouseEvent) => void }).onClick?.(e);
+        toggle();
+      },
+    })
+  ) : (
+    <span aria-haspopup="menu" aria-expanded={open} onClick={toggle}>
+      {trigger}
+    </span>
+  );
+
   return (
     <div ref={rootRef} className="relative inline-flex">
-      <span
-        aria-haspopup="menu"
-        aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
-      >
-        {trigger}
-      </span>
+      {triggerNode}
       {open ? (
         <div
           ref={menuRef}
