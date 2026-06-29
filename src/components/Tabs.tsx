@@ -63,6 +63,8 @@ export function TabList({ className, children, onKeyDown, ...props }: React.HTML
   // roving tabIndex so only the active one is in the page tab order.
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     onKeyDown?.(e);
+    // Let a consumer's handler fully override the built-in tab navigation.
+    if (e.defaultPrevented) return;
     const tabs = Array.from(e.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]:not([disabled])'));
     if (tabs.length === 0) return;
     const idx = tabs.indexOf(document.activeElement as HTMLElement);
