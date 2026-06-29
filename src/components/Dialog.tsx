@@ -16,9 +16,10 @@ export interface DialogProps {
 }
 
 interface DialogContextValue {
+  /** Default id a `DialogTitle` adopts when the consumer doesn't supply one. */
   titleId: string;
-  /** Called by `DialogTitle` on mount; returns an unregister cleanup. */
-  registerTitle: () => () => void;
+  /** Called by `DialogTitle` with its actual id; returns an unregister cleanup. */
+  registerTitle: (id: string) => () => void;
 }
 
 const DialogContext = React.createContext<DialogContextValue | null>(null);
@@ -75,21 +76,22 @@ export function Dialog({
   dismissableRef.current = dismissable;
 
   // Auto-wire the dialog's accessible name to a rendered DialogTitle. The title
-  // registers via context; the panel points aria-labelledby at it only while one
-  // is mounted, so there's no dangling reference when a dialog has no title.
+  // reports its actual id (custom or the generated default) via context, so the
+  // panel's aria-labelledby always resolves — and stays unset when no title is
+  // mounted, avoiding a dangling reference.
   const titleId = React.useId();
-  const [titleCount, setTitleCount] = React.useState(0);
+  const [labelId, setLabelId] = React.useState<string | undefined>(undefined);
   const ctx = React.useMemo<DialogContextValue>(
     () => ({
       titleId,
-      registerTitle: () => {
-        setTitleCount((c) => c + 1);
-        return () => setTitleCount((c) => c - 1);
+      registerTitle: (id: string) => {
+        setLabelId(id);
+        return () => setLabelId((cur) => (cur === id ? undefined : cur));
       },
     }),
     [titleId]
   );
-  const labelledBy = ariaLabelledby ?? (titleCount > 0 ? titleId : undefined);
+  const labelledBy = ariaLabelledby ?? labelId;
 
   React.useEffect(() => {
     if (!open) return;
@@ -188,11 +190,14 @@ export function DialogHeader({ className, children, ...props }: React.HTMLAttrib
 /** Dialog heading, rendered in the display font. Names the dialog for a11y. */
 export function DialogTitle({ id, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
   const ctx = React.useContext(DialogContext);
-  // Register so the panel knows a title exists, and adopt the shared id so
-  // aria-labelledby resolves (an explicit `id` prop still wins).
-  React.useEffect(() => ctx?.registerTitle(), [ctx]);
+  // Adopt the shared id when the consumer didn't supply one, and report the
+  // actual id back so the panel's aria-labelledby matches this heading exactly.
+  const headingId = id ?? ctx?.titleId;
+  React.useEffect(() => {
+    if (ctx && headingId) return ctx.registerTitle(headingId);
+  }, [ctx, headingId]);
   return (
-    <h2 id={id ?? ctx?.titleId} className={cn("font-display text-headline text-ink", className)} {...props} />
+    <h2 id={headingId} className={cn("font-display text-headline text-ink", className)} {...props} />
   );
 }
 
