@@ -56,11 +56,31 @@ function useTabs() {
 }
 
 /** Row of tab triggers. Place inside `Tabs`. */
-export function TabList({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+export function TabList({ className, children, onKeyDown, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   const { variant } = useTabs();
+  // WAI-ARIA tablist keyboard support: Left/Right move between tabs (with
+  // automatic activation), Home/End jump to the ends. Tabs themselves carry a
+  // roving tabIndex so only the active one is in the page tab order.
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    onKeyDown?.(e);
+    const tabs = Array.from(e.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]:not([disabled])'));
+    if (tabs.length === 0) return;
+    const idx = tabs.indexOf(document.activeElement as HTMLElement);
+    let next = -1;
+    if (e.key === "ArrowRight") next = (idx + 1) % tabs.length;
+    else if (e.key === "ArrowLeft") next = (idx - 1 + tabs.length) % tabs.length;
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = tabs.length - 1;
+    if (next >= 0) {
+      e.preventDefault();
+      tabs[next].focus();
+      tabs[next].click();
+    }
+  };
   return (
     <div
       role="tablist"
+      onKeyDown={handleKeyDown}
       className={cn(
         variant === "pill"
           ? "inline-flex gap-1 rounded-pill border border-hairline bg-surface-1 p-1"
@@ -87,6 +107,7 @@ export function Tab({ value, className, children, onClick, ...props }: TabProps)
       type="button"
       role="tab"
       aria-selected={selected}
+      tabIndex={selected ? 0 : -1}
       onClick={(event) => {
         onClick?.(event);
         if (!event.defaultPrevented) setValue(value);
