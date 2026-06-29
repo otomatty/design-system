@@ -40,20 +40,36 @@ function unlockScroll() {
   if (scrollLockCount === 0) document.body.style.overflow = restoreOverflow;
 }
 
+// Stack of currently-open dialog panels; the last entry is the topmost. Used so
+// only the topmost dialog traps Tab / handles Escape when several are open.
+const dialogStack: HTMLDivElement[] = [];
+
 export function Dialog({ open, onClose, children, size = "md", dismissable = true }: DialogProps) {
   const panelRef = React.useRef<HTMLDivElement>(null);
+  // Keep the latest handler/flag in refs so the focus effect can depend on
+  // `open` alone — an inline `onClose` changing identity on every parent render
+  // must not re-run the effect and steal focus back to the first control.
+  const onCloseRef = React.useRef(onClose);
+  const dismissableRef = React.useRef(dismissable);
+  onCloseRef.current = onClose;
+  dismissableRef.current = dismissable;
 
   React.useEffect(() => {
     if (!open) return;
-    // Remember what had focus so it can be restored when the dialog closes.
+    const panel = panelRef.current;
+    // Remember what had focus so it can be restored when the dialog closes
+    // (for a nested dialog this is a control inside the parent dialog).
     const previouslyFocused = document.activeElement as HTMLElement | null;
+    if (panel) dialogStack.push(panel);
 
+    const isTopmost = () => dialogStack[dialogStack.length - 1] === panel;
     const focusables = () =>
-      Array.from(panelRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE) ?? []);
+      Array.from(panel?.querySelectorAll<HTMLElement>(FOCUSABLE) ?? []);
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && dismissable) {
-        onClose();
+      if (!isTopmost()) return;
+      if (e.key === "Escape" && dismissableRef.current) {
+        onCloseRef.current();
         return;
       }
       if (e.key === "Tab") {
@@ -61,7 +77,7 @@ export function Dialog({ open, onClose, children, size = "md", dismissable = tru
         const items = focusables();
         if (items.length === 0) {
           e.preventDefault();
-          panelRef.current?.focus();
+          panel?.focus();
           return;
         }
         const first = items[0];
@@ -81,15 +97,19 @@ export function Dialog({ open, onClose, children, size = "md", dismissable = tru
     lockScroll();
 
     // Move focus into the dialog on open (first focusable, else the panel).
-    const initial = focusables()[0] ?? panelRef.current;
+    const initial = focusables()[0] ?? panel;
     initial?.focus();
 
     return () => {
       document.removeEventListener("keydown", onKey);
       unlockScroll();
+      if (panel) {
+        const i = dialogStack.indexOf(panel);
+        if (i !== -1) dialogStack.splice(i, 1);
+      }
       previouslyFocused?.focus?.();
     };
-  }, [open, onClose, dismissable]);
+  }, [open]);
 
   if (!open) return null;
 
