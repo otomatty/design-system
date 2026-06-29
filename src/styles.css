@@ -118,9 +118,9 @@
   --ds-font-size-eyebrow: 13px;
   --ds-font-size-mono: 13px;
 
-  --ds-font-display: "InterVariable", "Inter", -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
-  --ds-font-sans: "InterVariable", "Inter", -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
-  --ds-font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --ds-font-display: "InterVariable", "Inter", -apple-system, system-ui, "Segoe UI", "Roboto", sans-serif;
+  --ds-font-sans: "InterVariable", "Inter", -apple-system, system-ui, "Segoe UI", "Roboto", sans-serif;
+  --ds-font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "Menlo", monospace;
 
   color-scheme: dark;
 }
@@ -140,7 +140,7 @@
     background-color: rgb(var(--ds-canvas));
     color: rgb(var(--ds-ink));
     font-family: "InterVariable", "Inter", -apple-system, system-ui,
-      "Segoe UI", Roboto, sans-serif;
+      "Segoe UI", "Roboto", sans-serif;
     font-size: 16px;
     line-height: 1.5;
     letter-spacing: -0.05px;
@@ -166,7 +166,7 @@
 .ds-root {
   background-color: rgb(var(--ds-canvas));
   color: rgb(var(--ds-ink));
-  font-family: "InterVariable", "Inter", -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+  font-family: "InterVariable", "Inter", -apple-system, system-ui, "Segoe UI", "Roboto", sans-serif;
   letter-spacing: -0.05px;
 }
 
