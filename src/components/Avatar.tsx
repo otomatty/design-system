@@ -40,9 +40,14 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(function Av
     setFailed(false);
   }, [src]);
   const showImage = src && !failed;
+  // In the initials/placeholder fallback the visible glyph is aria-hidden, so
+  // surface the name on the wrapper itself for screen readers (the <img> alt
+  // carries it while the image is shown). Decorative when there's no name.
+  const fallbackLabel = !showImage && name ? { role: "img", "aria-label": name } : {};
   return (
     <span
       ref={ref}
+      {...fallbackLabel}
       className={cn(
         "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-hairline bg-surface-3 font-medium text-ink-muted",
         sizes[size],

@@ -9,7 +9,19 @@ export interface DialogProps {
   size?: "sm" | "md" | "lg";
   /** Close when the backdrop is clicked. @default true */
   dismissable?: boolean;
+  /** Accessible name for the dialog when no `DialogTitle` is rendered. */
+  "aria-label"?: string;
+  /** Id of an element labelling the dialog. Overrides the auto-wired `DialogTitle`. */
+  "aria-labelledby"?: string;
 }
+
+interface DialogContextValue {
+  titleId: string;
+  /** Called by `DialogTitle` on mount; returns an unregister cleanup. */
+  registerTitle: () => () => void;
+}
+
+const DialogContext = React.createContext<DialogContextValue | null>(null);
 
 const sizes = {
   sm: "max-w-sm",
@@ -44,7 +56,15 @@ function unlockScroll() {
 // only the topmost dialog traps Tab / handles Escape when several are open.
 const dialogStack: HTMLDivElement[] = [];
 
-export function Dialog({ open, onClose, children, size = "md", dismissable = true }: DialogProps) {
+export function Dialog({
+  open,
+  onClose,
+  children,
+  size = "md",
+  dismissable = true,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledby,
+}: DialogProps) {
   const panelRef = React.useRef<HTMLDivElement>(null);
   // Keep the latest handler/flag in refs so the focus effect can depend on
   // `open` alone — an inline `onClose` changing identity on every parent render
@@ -53,6 +73,23 @@ export function Dialog({ open, onClose, children, size = "md", dismissable = tru
   const dismissableRef = React.useRef(dismissable);
   onCloseRef.current = onClose;
   dismissableRef.current = dismissable;
+
+  // Auto-wire the dialog's accessible name to a rendered DialogTitle. The title
+  // registers via context; the panel points aria-labelledby at it only while one
+  // is mounted, so there's no dangling reference when a dialog has no title.
+  const titleId = React.useId();
+  const [titleCount, setTitleCount] = React.useState(0);
+  const ctx = React.useMemo<DialogContextValue>(
+    () => ({
+      titleId,
+      registerTitle: () => {
+        setTitleCount((c) => c + 1);
+        return () => setTitleCount((c) => c - 1);
+      },
+    }),
+    [titleId]
+  );
+  const labelledBy = ariaLabelledby ?? (titleCount > 0 ? titleId : undefined);
 
   React.useEffect(() => {
     if (!open) return;
@@ -114,24 +151,28 @@ export function Dialog({ open, onClose, children, size = "md", dismissable = tru
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center p-md">
-      <div
-        className="absolute inset-0 animate-ds-fade-in bg-canvas/70 backdrop-blur-sm"
-        onClick={dismissable ? onClose : undefined}
-      />
-      <div
-        ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        tabIndex={-1}
-        className={cn(
-          "ds-edge-highlight relative w-full animate-ds-scale-in rounded-xl border border-hairline-strong bg-surface-2 shadow-2xl focus:outline-none",
-          sizes[size]
-        )}
-      >
-        {children}
+    <DialogContext.Provider value={ctx}>
+      <div className="fixed inset-0 z-[90] flex items-center justify-center p-md">
+        <div
+          className="absolute inset-0 animate-ds-fade-in bg-canvas/70 backdrop-blur-sm"
+          onClick={dismissable ? onClose : undefined}
+        />
+        <div
+          ref={panelRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={ariaLabel}
+          aria-labelledby={labelledBy}
+          tabIndex={-1}
+          className={cn(
+            "ds-edge-highlight relative w-full animate-ds-scale-in rounded-xl border border-hairline-strong bg-surface-2 shadow-2xl focus:outline-none",
+            sizes[size]
+          )}
+        >
+          {children}
+        </div>
       </div>
-    </div>
+    </DialogContext.Provider>
   );
 }
 
@@ -144,9 +185,15 @@ export function DialogHeader({ className, children, ...props }: React.HTMLAttrib
   );
 }
 
-/** Dialog heading, rendered in the display font. */
-export function DialogTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h2 className={cn("font-display text-headline text-ink", className)} {...props} />;
+/** Dialog heading, rendered in the display font. Names the dialog for a11y. */
+export function DialogTitle({ id, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
+  const ctx = React.useContext(DialogContext);
+  // Register so the panel knows a title exists, and adopt the shared id so
+  // aria-labelledby resolves (an explicit `id` prop still wins).
+  React.useEffect(() => ctx?.registerTitle(), [ctx]);
+  return (
+    <h2 id={id ?? ctx?.titleId} className={cn("font-display text-headline text-ink", className)} {...props} />
+  );
 }
 
 /** Muted secondary line beneath a `DialogTitle`. */
