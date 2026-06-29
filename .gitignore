@@ -1,0 +1,12 @@
+node_modules/
+dist/
+scratch/
+*.log
+.DS_Store
+.ds-sync/
+ds-bundle/
+.ds-build-meta.json
+.sync-diff.json
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules

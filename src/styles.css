@@ -1,0 +1,183 @@
+/*
+ * Design system stylesheet.
+ *
+ * Order matters: @font-face + token variables first, then Tailwind layers.
+ * Fonts are copied into ./fonts at build time (scripts/copy-fonts.mjs) and
+ * referenced relative to the compiled dist/styles.css.
+ */
+
+@font-face {
+  font-family: "InterVariable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./fonts/inter-variable.woff2") format("woff2");
+}
+
+/* Alias the common name to the same bundled file so font stacks that fall
+   through to "Inter" still resolve to the shipped variable face. */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./fonts/inter-variable.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "JetBrains Mono Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url("./fonts/jetbrains-mono-variable.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url("./fonts/jetbrains-mono-variable.woff2") format("woff2");
+}
+
+/* ── Design tokens as CSS custom properties ─────────────────────────────── */
+:root {
+  /*
+   * Colors are stored as space-separated RGB channel triplets (not hex) so the
+   * Tailwind preset can compose them as `rgb(var(--ds-*) / <alpha-value>)` and
+   * opacity modifiers (bg-primary/15, ring-primary-focus/50) resolve. When using
+   * a token var directly in CSS, wrap it: `rgb(var(--ds-canvas))`.
+   */
+
+  /* Surface ladder */
+  --ds-canvas: 1 1 2;
+  --ds-surface-1: 8 9 11;
+  --ds-surface-2: 16 18 22;
+  --ds-surface-3: 24 26 31;
+  --ds-surface-4: 32 35 41;
+
+  /* Hairlines */
+  --ds-hairline: 35 37 42;
+  --ds-hairline-strong: 51 54 61;
+  --ds-hairline-tertiary: 27 29 33;
+
+  /* Ink */
+  --ds-ink: 247 248 248;
+  --ds-ink-muted: 208 214 224;
+  --ds-ink-subtle: 138 143 152;
+  --ds-ink-tertiary: 98 102 109;
+
+  /* Brand */
+  --ds-primary: 94 106 210;
+  --ds-primary-hover: 130 143 255;
+  --ds-primary-focus: 94 105 209;
+  --ds-on-primary: 255 255 255;
+  --ds-brand-secure: 122 127 173;
+
+  /* Semantic */
+  --ds-semantic-success: 39 166 68;
+  --ds-semantic-warning: 242 153 74;
+  --ds-semantic-danger: 235 87 87;
+  --ds-semantic-info: 94 106 210;
+
+  /* Inverse */
+  --ds-inverse-canvas: 255 255 255;
+  --ds-inverse-surface-1: 244 245 248;
+  --ds-inverse-surface-2: 231 233 239;
+  --ds-inverse-ink: 1 1 2;
+
+  /* Non-color tokens (mirror of the Tailwind preset, for direct CSS use) */
+  --ds-radius-xs: 4px;
+  --ds-radius-sm: 6px;
+  --ds-radius-md: 8px;
+  --ds-radius-lg: 12px;
+  --ds-radius-xl: 16px;
+  --ds-radius-xxl: 24px;
+  --ds-radius-pill: 9999px;
+
+  --ds-space-xxs: 4px;
+  --ds-space-xs: 8px;
+  --ds-space-sm: 12px;
+  --ds-space-md: 16px;
+  --ds-space-lg: 24px;
+  --ds-space-xl: 32px;
+  --ds-space-xxl: 48px;
+  --ds-space-section: 96px;
+
+  --ds-font-size-display-xl: 80px;
+  --ds-font-size-display-lg: 56px;
+  --ds-font-size-display-md: 40px;
+  --ds-font-size-headline: 28px;
+  --ds-font-size-card-title: 22px;
+  --ds-font-size-subhead: 20px;
+  --ds-font-size-body-lg: 18px;
+  --ds-font-size-body: 16px;
+  --ds-font-size-body-sm: 14px;
+  --ds-font-size-caption: 12px;
+  --ds-font-size-button: 14px;
+  --ds-font-size-eyebrow: 13px;
+  --ds-font-size-mono: 13px;
+
+  --ds-font-display: "InterVariable", "Inter", -apple-system, system-ui, "Segoe UI", "Roboto", sans-serif;
+  --ds-font-sans: "InterVariable", "Inter", -apple-system, system-ui, "Segoe UI", "Roboto", sans-serif;
+  --ds-font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "Menlo", monospace;
+
+  color-scheme: dark;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: rgb(var(--ds-canvas));
+    color: rgb(var(--ds-ink));
+    font-family: "InterVariable", "Inter", -apple-system, system-ui,
+      "Segoe UI", "Roboto", sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: -0.05px;
+  }
+
+  *,
+  ::before,
+  ::after {
+    border-color: rgb(var(--ds-hairline));
+  }
+
+  ::selection {
+    background-color: rgb(var(--ds-primary) / 0.35);
+    color: rgb(var(--ds-ink));
+  }
+}
+
+/*
+ * Plain (non-layered) rules — never tree-shaken by the content scan.
+ * `.ds-root` is the explicit dark-surface opt-in for previews and embedded
+ * designs, where the host page's body background isn't the canvas.
+ */
+.ds-root {
+  background-color: rgb(var(--ds-canvas));
+  color: rgb(var(--ds-ink));
+  font-family: "InterVariable", "Inter", -apple-system, system-ui, "Segoe UI", "Roboto", sans-serif;
+  letter-spacing: -0.05px;
+}
+
+@layer utilities {
+  /* Subtle top edge highlight used on lifted panels (the "pixel rendered" feel). */
+  .ds-edge-highlight {
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.04);
+  }
+
+  .ds-focus-ring {
+    outline: 2px solid rgb(var(--ds-primary-focus) / 0.5);
+    outline-offset: 1px;
+  }
+}
